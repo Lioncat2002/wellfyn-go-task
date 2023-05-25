@@ -21,7 +21,7 @@ type UpdateData struct {
 
 func CurrentUser(c *gin.Context) {
 
-	email, err := token.ExtractTokenID(c)
+	email, err := token.ExtractEmail(c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -40,7 +40,7 @@ func CurrentUser(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 
-	email, err := token.ExtractTokenID(c)
+	email, err := token.ExtractEmail(c)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
