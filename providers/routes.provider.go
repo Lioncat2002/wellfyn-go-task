@@ -3,11 +3,15 @@ package providers
 import (
 	"main/controllers"
 	"main/middlewares"
+	"main/models"
+	"main/models/database"
 
 	"github.com/gin-gonic/gin"
 )
 
 func InitRouter() *gin.Engine {
+	database.InitDatabase()
+	models.Migrate()
 	r := gin.Default()
 	r.Use(middlewares.Cors())
 	public := r.Group("/api")
