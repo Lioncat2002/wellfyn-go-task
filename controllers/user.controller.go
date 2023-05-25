@@ -100,6 +100,7 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 
 }
+
 func SignUp(c *gin.Context) {
 
 	var data Data
