@@ -154,17 +154,6 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
-        axios
-          .post("https://wellfyn-go-task-production.up.railway.app/api/login", {
-            email: email,
-            password: password,
-          })
-          .then((response) => {
-            setToken(response.data.token);
-            localStorage.setItem("token", token);
-            console.log(response.data);
-          })
-          .catch((err) => console.log(err));
       });
   };
   const handleLogin = async (email, password) => {
@@ -219,6 +208,24 @@ function App() {
       }
     );
     console.log(response);
+  };
+
+  const handleUserInfo = async () => {
+    axios
+      .post(
+        "https://wellfyn-go-task-production.up.railway.app/api/user/current?token=" +
+          localStorage.getItem("token"),
+        {}
+      )
+      .then((response) => {
+        setUserInfo({
+          name: response.body.name,
+          phoneNumber: response.body.phno,
+          imageUrl: response.body.imgurl,
+        });
+        console.log(response.data);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
