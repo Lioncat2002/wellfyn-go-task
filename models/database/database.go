@@ -18,7 +18,7 @@ func InitDatabase() {
 	if err != nil {
 		log.Fatal("Error loading .env file", err)
 	}
-	dburi := os.Getenv("DB_URI")
+	dburi := os.Getenv("DB_URI") //used a cockroachdb database but postgres is fine
 	DB, err = gorm.Open("postgres", dburi)
 	if err != nil {
 		log.Fatal("failed to connect database", err)
