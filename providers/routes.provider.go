@@ -23,5 +23,6 @@ func InitRouter() *gin.Engine {
 	protected.Use(middlewares.JwtAuth())
 	protected.POST("/current", controllers.CurrentUser)
 	protected.POST("/update", controllers.UpdateUser)
+	protected.POST("/update/resume", controllers.UpdateResume)
 	return r
 }
