@@ -165,7 +165,7 @@ func SignUp(c *gin.Context) {
 
 	_, err := user.Save()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
 	token, err := models.LoginCheck(user.Email, user.Password) //check if user exists

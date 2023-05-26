@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   BrowserRouter as Router,
   Route,
@@ -20,6 +21,7 @@ function SignupPage({ handleSignup }) {
 
   return (
     <div>
+      <button onClick={() => navigate("/login")}>Login</button>
       <h1>Signup</h1>
       <form onSubmit={handleSubmit}>
         <input
@@ -40,6 +42,39 @@ function SignupPage({ handleSignup }) {
   );
 }
 
+function LoginPage({ handleLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleLogin(email, password);
+    navigate("/more-info");
+  };
+
+  return (
+    <div>
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">login</button>
+      </form>
+    </div>
+  );
+}
+
 function MoreInfoPage({ handleUpdateUser, handleUpdateResume }) {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -49,13 +84,13 @@ function MoreInfoPage({ handleUpdateUser, handleUpdateResume }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleUpdateUser(name, phoneNumber, imageUrl);
+    handleUpdateResume(resume);
     navigate("/user-info");
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setResume(file);
-    handleUpdateResume(file);
   };
 
   return (
@@ -106,30 +141,94 @@ function App() {
     imageUrl: "",
   });
 
-  const handleSignup = (email, password) => {
-    // Signup logic...
-
-    // Assuming successful signup, set token and store in localStorage
-    const token = "your-jwt-token";
-    setToken(token);
-    localStorage.setItem("token", token);
+  const handleSignup = async (email, password) => {
+    await axios
+      .post("https://wellfyn-go-task-production.up.railway.app/api/signup", {
+        email: email,
+        password: password,
+      })
+      .then((response) => {
+        setToken(response.data.token);
+        localStorage.setItem("token", response.data.token);
+        console.log(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        axios
+          .post("https://wellfyn-go-task-production.up.railway.app/api/login", {
+            email: email,
+            password: password,
+          })
+          .then((response) => {
+            setToken(response.data.token);
+            localStorage.setItem("token", token);
+            console.log(response.data);
+          })
+          .catch((err) => console.log(err));
+      });
+  };
+  const handleLogin = async (email, password) => {
+    await axios
+      .post("https://wellfyn-go-task-production.up.railway.app/api/login", {
+        email: email,
+        password: password,
+      })
+      .then((response) => {
+        setToken(response.data.token);
+        localStorage.setItem("token", response.data.token);
+        console.log(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
-  const handleUpdateUser = (name, phoneNumber, imageUrl) => {
+  const handleUpdateUser = async (name, phoneNumber, imageUrl) => {
     // Update user logic...
-    setUserInfo({ name, phoneNumber, imageUrl });
-    console.log(name, phoneNumber, imageUrl);
-    console.log(token);
+    await setUserInfo({ name, phoneNumber, imageUrl });
+    axios
+      .post(
+        "https://wellfyn-go-task-production.up.railway.app/api/user/update?token=" +
+          localStorage.getItem("token"),
+        {
+          name: name,
+          imgurl: imageUrl,
+          phno: phoneNumber,
+        }
+      )
+      .then((response) => {
+        setUserInfo({ name, phoneNumber, imageUrl });
+        console.log(response.data);
+      })
+      .catch((err) => console.log(err));
   };
 
-  const handleUpdateResume = (file) => {
-    // Update resume logic...
+  const handleUpdateResume = async (file) => {
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    // Send the form data using Axios
+    const response = await axios.post(
+      "https://wellfyn-go-task-production.up.railway.app/api/user/update/resume?token=" +
+        localStorage.getItem("token"),
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    console.log(response);
   };
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<SignupPage handleSignup={handleSignup} />} />
+        <Route
+          path="/login"
+          element={<LoginPage handleLogin={handleLogin} />}
+        />
         <Route
           path="/more-info"
           element={
