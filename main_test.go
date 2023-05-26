@@ -18,6 +18,7 @@ type Data struct {
 
 var data Data
 
+// signup test
 func TestSignUpRoute(t *testing.T) {
 
 	router := providers.InitRouter()
@@ -35,6 +36,7 @@ func TestSignUpRoute(t *testing.T) {
 
 }
 
+// login test
 func TestLogin(t *testing.T) {
 	router := providers.InitRouter()
 	w := httptest.NewRecorder()
@@ -49,6 +51,7 @@ func TestLogin(t *testing.T) {
 	assert.NotEqual(t, "", data.Token)
 }
 
+// current user test
 func TestCurrentUser(t *testing.T) {
 	router := providers.InitRouter()
 	w := httptest.NewRecorder()
@@ -57,11 +60,12 @@ func TestCurrentUser(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 }
 
+// update user data test
 func TestUpdateUser(t *testing.T) {
 	router := providers.InitRouter()
 	w := httptest.NewRecorder()
 	body := `{"name":"Tigercat","imgurl":"https://picsum.photos/200","phno":"+9123456789"}`
-	req, _ := http.NewRequest("POST", "/api/user/current?token="+data.Token, bytes.NewBufferString(body))
+	req, _ := http.NewRequest("POST", "/api/user/update?token="+data.Token, bytes.NewBufferString(body))
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 }
